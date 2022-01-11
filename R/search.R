@@ -46,28 +46,12 @@ iupac = list( "M" = list("A", "C"),
 
 enumerate_primers = function(forward, reverse){
   forward_primers = enumerate_ambiguity(forward)
-  data.frame(forward=forward_primers,
-             reverse=rep(enumerate_ambiguity(reverse),
-                         each=length(forward_primers)),
-             stringsAsFactors = FALSE)
+  reverse_primers = enumerate_ambiguity(reverse)
+  expand.grid(forward = forward_primers, reverse = reverse_primers, stringsAsFactors = FALSE)
 }
+
 enumerate_ambiguity = function(sequence){
-  search_regex = paste(names(iupac), collapse='|')
-  locs = str_locate_all(sequence, search_regex)
-  sequences = list()
-  count = 1
-  for (i in seq_len(nrow(locs[[1]]))){
-    loc = locs[[1]][i,]
-    ambiguity = str_sub(sequence, loc[1], loc[2])
-    for(type in iupac[[ambiguity]]){
-      new_seq = sequence
-      str_sub(new_seq, loc[1], loc[2]) <- type
-      sequences[[count]] = enumerate_ambiguity(new_seq)
-      count = count + 1
-    }
-    return(unlist(sequences))
-  }
-  return(sequence)
+  as.character(unlist(DECIPHER::Disambiguate(DNAStringSet(sequence)))) # A lazy way to have a vectorized disambiguation to accept more than one forward and reverse as input
 }
 
 print_options = function(options){
