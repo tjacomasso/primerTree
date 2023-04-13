@@ -44,7 +44,7 @@ parse_LinkSet = function(LinkSet){
   taxid = xpathSApply(LinkSet, './/LinkSetDb/Link/Id', xmlValue)
   if(length(taxid) != 1)
     taxid = NA
-  names(taxid) = gid
+  names(taxid) = gid[1]
   taxid
 }
 
